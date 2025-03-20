@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\OpenWeatherController;
+use App\Http\Controllers\OpenMeteo\OpenMeteoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,12 +19,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::controller(OpenWeatherController::class)->group(function() {
-  Route::get('dia-atual', 'getCurrentDayWeather');
-  Route::get('dia-atual', 'getCurrentDayWeather');
-  Route::get('dia-atual', 'getCurrentDayWeather');
-  Route::get('dia-atual', 'getCurrentDayWeather');
-  Route::get('dia-atual', 'getCurrentDayWeather');
-  Route::get('dia-atual', 'getCurrentDayWeather');
-  Route::get('dia-atual', 'getCurrentDayWeather');
+Route::controller(OpenMeteoController::class)->group(function() {
+  Route::get('dia-atual', 'getCurrentDayWeatherPhrase');
+  Route::get('clima-atual', 'getCurrentWeather');
+  Route::get('proximos-sete-dias', 'getCurrentDayWeather');
+  Route::get('temperatura-media-ontem', 'getCurrentDayWeather');
+  Route::get('converter-temperatura', 'getCurrentDayWeather');
+  Route::get('nascer-por-do-sol', 'getCurrentDayWeather');
+  Route::get('previsao-chuva', 'getCurrentDayWeather');
+  Route::get('temperatura-ontem-hoje', 'getCurrentDayWeather');
 });

@@ -4,10 +4,10 @@ namespace App\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class ApiService extends Facade {
+class GeoCodingApi extends Facade {
   
   protected static function getFacadeAccessor()
   {
-    return 'open-meteo-api-service';
+    return 'geocoding-api-service';
   }
 }
