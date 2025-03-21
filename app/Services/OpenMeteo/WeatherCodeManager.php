@@ -1,10 +1,14 @@
 <?php
 namespace App\Services\OpenMeteo;
 
+/**
+ * 
+ * @author Eduardo Seiji
+ */
 class WeatherCodeManager
 {
     /**
-     * @var array Mapeamento dos códigos meteorológicos para descrições.
+     * @var array Mapping weather codes to descriptions.
      */
     private static array $weatherCodes = [
         0   => "Clear sky",
@@ -38,10 +42,10 @@ class WeatherCodeManager
     ];
 
     /**
-     * Retorna a descrição do código meteorológico.
+     * Returns the weather description based on code
      *
-     * @param int $code Código do tempo.
-     * @return string Descrição correspondente ou "Unknown weather condition" se não encontrado.
+     * @param int $code Weather code
+     * @return string Matching weather description
      */
     public static function getDescription(int $code): string
     {
