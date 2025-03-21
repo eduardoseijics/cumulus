@@ -22,8 +22,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::controller(OpenMeteoController::class)->group(function() {
   Route::get('dia-atual', 'getCurrentDayWeatherPhrase');
   Route::get('clima-atual', 'getCurrentWeather');
-  Route::get('proximos-sete-dias', 'getCurrentDayWeather');
-  Route::get('temperatura-media-ontem', 'getCurrentDayWeather');
+  Route::get('proximos-sete-dias', 'getWeatherForNextSevenDays');
+  Route::get('temperatura-media-ontem', 'getYesterdayWeather');
   Route::get('converter-temperatura', 'getCurrentDayWeather');
   Route::get('nascer-por-do-sol', 'getCurrentDayWeather');
   Route::get('previsao-chuva', 'getCurrentDayWeather');
