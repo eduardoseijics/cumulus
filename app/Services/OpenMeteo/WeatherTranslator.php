@@ -36,6 +36,13 @@ class WeatherTranslator {
     "Unknown weather condition"           => "Condição meteorológica desconhecida"
   ];
 
+  /**
+   * 
+   * Translate weather descriptions from english to portuguese
+   * 
+   * @param string $description English description
+   * @return string Portuguese description
+   */
   public static function translate(string $description): string
   {
     return self::$translations[$description] ?? $description;
