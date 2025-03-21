@@ -20,6 +20,7 @@ class OpenMeteoData {
 
   /**
    * Returns currents temperature with its unit
+   * @return string|null Current temperature
    */
   public function getCurrentTemperature(): ?string
   {
@@ -42,7 +43,7 @@ class OpenMeteoData {
 
   /**
    * 
-   * @return int|null Weather code
+   * @return int|null Current weather code
    */
   public function getCurrentWeatherCode()
   {

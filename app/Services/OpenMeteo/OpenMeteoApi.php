@@ -3,7 +3,6 @@
 namespace App\Services\OpenMeteo;
 
 use RuntimeException;
-use App\Facades\ApiService;
 use App\Facades\OpenMeteoApiFacade;
 
 /**
@@ -18,7 +17,7 @@ class OpenMeteoApi {
    * @return array
    * @throws RuntimeException
    */
-  public static function fetchWeatherData($queryString): array
+  public static function get($queryString): array
   {
     $response = OpenMeteoApiFacade::get('?' . $queryString)->json();
 

@@ -2,33 +2,51 @@
 
 namespace App\Http\Controllers\OpenMeteo;
 
-use App\Facades\ApiService;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\OpenMeteo\ForecastForDays;
+use App\Services\OpenMeteo\CurrentDayWeather;
 use Symfony\Component\HttpFoundation\Response;
 
-class OpenMeteoController extends Controller
-{
+/**
+ * 
+ * @author Eduardo Seiji
+ */
+class OpenMeteoController extends Controller {
 
+  /**
+   * @param Request $request
+   * @return Response Current day phrase with weather informations
+   */
   public function getCurrentDayWeatherPhrase(Request $request): Response
   {
-
     try {
-      $obCurrentDayWeather = new CurrentDayWeatherController;
-      $phrase = $obCurrentDayWeather->getTodayPhrase($request);
+      $request->validate([
+        'latitude' => 'required',
+        'longitude' => 'required',
+      ]);
+
+      $phrase = (new CurrentDayWeather)->getTodayPhrase($request);
+      
       return response()->json(['phrase' => $phrase], Response::HTTP_OK);
     } catch (\Throwable $th) {
       return response()->json(['error' => $th->getMessage()]);
     }
   }
 
-  public function getCurrentWeather(Request $request)
+  /**
+   * @param Request $request
+   * @return Response Current day weather informations
+   */
+  public function getCurrentWeather(Request $request): Response
   {
     try {
-      $obCurrentDayWeather = new CurrentDayWeatherController;
-      $response = $obCurrentDayWeather->getCurrentWeatherInfo($request);
+      $request->validate([
+        'latitude' => 'required',
+        'longitude' => 'required',
+      ]);
+
+      $response = (new CurrentDayWeather)->getCurrentWeatherInfo($request);
 
       return response()->json($response, Response::HTTP_OK);
     } catch (\Throwable $th) {
@@ -36,8 +54,17 @@ class OpenMeteoController extends Controller
     }
   }
 
-  public function getWeatherForNextSevenDays(Request $request)
+  /**
+   * @param Request $request
+   * @return Response Next seven days weather information
+   */
+  public function getWeatherForNextSevenDays(Request $request): Response
   {
+    $request->validate([
+      'latitude' => 'required',
+      'longitude' => 'required'
+    ]);
+    
     try {
       $obForecastForDaysService = new ForecastForDays;
       $response = $obForecastForDaysService->getWeatherForNextSevenDays($request);

@@ -6,19 +6,19 @@ use App\Services\OpenMeteo\OpenMeteoApi;
 
 class ForecastForDays {
 
-  public function getWeatherForNextSevenDays($request)
+  /**
+   * @return array Formatted weather data from the next seven days
+   */
+  public function getWeatherForNextSevenDays($request): array
   {
     $params = $request->all();
 
-    // Validações
     $this->validateCoordinates($params);
 
-    // Configura os parâmetros para a requisição
     $params['daily'] = 'temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode';
     $queryString = http_build_query($params);
 
-    // Faz a requisição e formata a resposta
-    $response = OpenMeteoApi::fetchWeatherData($queryString);
+    $response = OpenMeteoApi::get($queryString);
 
     // Formata os dados para resposta
     return $this->formatWeatherData($response['daily']);
@@ -30,8 +30,6 @@ class ForecastForDays {
       throw new \InvalidArgumentException('Latitude ou longitude não informadas.');
     }
   }
-
-
 
   private function formatWeatherData($dailyData)
   {

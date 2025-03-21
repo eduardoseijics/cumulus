@@ -1,40 +1,50 @@
 <?php
 
-namespace App\Http\Controllers\OpenMeteo;
-use App\Facades\ApiService;
+namespace App\Services\OpenMeteo;
+
 use App\Services\OpenMeteo\OpenMeteoApi;
 use Illuminate\Http\Request;
 use App\Services\OpenMeteo\WeatherSummary;
 use App\Services\OpenMeteo\OpenMeteoData;
 use App\Services\OpenMeteo\WeatherCodeManager;
 
-class CurrentDayWeatherController {
+class CurrentDayWeather {
 
+  /**
+   * 
+   * @param array $params Information from request
+   * @return array Weather data
+   */
   private function getWeatherData(array $params)
-  {
-    if(
-      empty($params) ||
-      !isset($params['latitude']) || !isset($params['longitude'])
-    ) return [];
-    
+  {    
     $params['current'] .= ',weather_code';
     $queryString = http_build_query($params);
 
-    $response = OpenMeteoApi::fetchWeatherData($queryString);
+    $response = OpenMeteoApi::get($queryString);
 
-    if(empty($response) || !is_array($response)) return [];
+    if(empty($response) || !is_array($response)) throw new \RuntimeException('Houve um erro na requisição, tente novamente mais tarde');
 
-    $obOpenMeteo = new OpenMeteoData($response);
+    $obOpenMeteoData = new OpenMeteoData($response);
     return [
-      'temperature' => $obOpenMeteo->getCurrentTemperature(),
-      'humidity'    => $obOpenMeteo->getCurrentHumidity(),
-      'weatherCode' => $obOpenMeteo->getCurrentWeatherCode(),
+      'temperature' => $obOpenMeteoData->getCurrentTemperature(),
+      'humidity'    => $obOpenMeteoData->getCurrentHumidity(),
+      'weatherCode' => $obOpenMeteoData->getCurrentWeatherCode(),
       'icon'        => WeatherSummary::getWeatherIcon($response['current']['weather_code'])
     ];
   }
 
-  public function getCurrentWeatherInfo(Request $request)
+  /**
+   * 
+   * @param Request $request
+   * @return array|null Current weather information
+   */
+  public function getCurrentWeatherInfo(Request $request): ?array
   {
+    $request->validate([
+      'latitude' => 'required',
+      'longitude' => 'required'
+    ]);
+
     $params = $request->all();
 
     $weatherData = $this->getWeatherData($params);
@@ -53,7 +63,12 @@ class CurrentDayWeatherController {
     ];
   }
 
-  public function getTodayPhrase(Request $request)
+  /**
+   * 
+   * @param Request $request
+   * @return string Today phrase talking about weather
+   */
+  public function getTodayPhrase(Request $request): string
   {
     $params = $request->all();
 
