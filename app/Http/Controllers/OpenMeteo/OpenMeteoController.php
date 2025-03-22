@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\OpenMeteo\ForecastForDays;
 use App\Services\OpenMeteo\CurrentDayWeather;
+use App\Services\OpenMeteo\PastDaysWeather;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -55,17 +56,38 @@ class OpenMeteoController extends Controller {
   }
 
   /**
+   * 
+   * @param Request $request
+   * @return Response Yesterday Weather Information
+   */
+  public function getYesterdayWeather(Request $request)
+  {
+    try {
+      $request->validate([
+        'latitude' => 'required',
+        'longitude' => 'required'
+      ]);
+      $obPastDaysWeather = new PastDaysWeather;
+
+      $response = $obPastDaysWeather->getYesterdayWeather($request);
+      return response()->json($response, Response::HTTP_OK);
+    } catch (\Throwable $th) {
+      return response()->json(['error' => $th->getMessage()]);
+    }
+  }
+
+  /**
    * @param Request $request
    * @return Response Next seven days weather information
    */
   public function getWeatherForNextSevenDays(Request $request): Response
   {
-    $request->validate([
-      'latitude' => 'required',
-      'longitude' => 'required'
-    ]);
-    
-    try {
+    try {      
+      $request->validate([
+        'latitude' => 'required',
+        'longitude' => 'required'
+      ]);
+      
       $obForecastForDaysService = new ForecastForDays;
       $response = $obForecastForDaysService->getWeatherForNextSevenDays($request);
       return response()->json($response, Response::HTTP_OK);

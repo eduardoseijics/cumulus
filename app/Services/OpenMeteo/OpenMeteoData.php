@@ -49,4 +49,13 @@ class OpenMeteoData {
   {
     return $this->weatherData['current']['weather_code'] ?? null;
   }
+
+  /**
+   * 
+   * @return array|null Daily
+   */
+  public function getDaily()
+  {
+    return $this->weatherData['daily'] ?? null;
+  }
 }

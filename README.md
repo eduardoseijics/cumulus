@@ -25,7 +25,10 @@ Este projeto fornece uma interface para consumir a API OpenMeteo, permitindo obt
    composer install
    ```
 
-4. Configure as variáveis de ambiente no arquivo `.env`.
+4. Inicie o projeto
+   ```sh
+   php artisan serve
+   ```
 
 ## Uso
 
@@ -34,7 +37,7 @@ Este projeto fornece uma interface para consumir a API OpenMeteo, permitindo obt
 A API permite buscar o clima atual com base nas coordenadas (latitude e longitude). Para isso, envie uma requisição `GET` para:
 
 ```sh
-GET /api/dia-atual?latitude={latitude}&longitude={longitude}&current=temperature_2m,weather_code,relative_humidity_2m
+GET /api/clima/hoje/frase?latitude={latitude}&longitude={longitude}&current=temperature_2m,weather_code,relative_humidity_2m
 ```
 
 **Exemplo de resposta:**

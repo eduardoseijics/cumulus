@@ -24,6 +24,10 @@ class ForecastForDays {
     return $this->formatWeatherData($response['daily']);
   }
 
+  /**
+   * 
+   * @return void
+   */
   private function validateCoordinates($params)
   {
     if (empty($params['latitude']) || empty($params['longitude'])) {
@@ -31,8 +35,14 @@ class ForecastForDays {
     }
   }
 
-  private function formatWeatherData($dailyData)
+  /**
+   * @param array $dailyData
+   * @return array Formated weather data
+   */
+  private function formatWeatherData(array $dailyData): array
   {
+    if(!is_array($dailyData)) return [];
+
     $formattedWeatherData = [];
 
     foreach ($dailyData['time'] as $index => $date) {

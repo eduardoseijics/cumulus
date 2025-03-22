@@ -48,8 +48,10 @@ class WeatherCodeManager
    * @param int $code Weather code
    * @return string Matching weather description
    */
-  public static function getDescription(int $code): string
+  public static function getDescription(int $code, bool $translate = true): string
   {
-    return self::$weatherCodes[$code] ?? 'Unknown weather condition';
+      $description = self::$weatherCodes[$code] ?? 'Unknown weather condition';
+  
+      return $translate ? WeatherTranslator::translate($description) : $description;
   }
 }
