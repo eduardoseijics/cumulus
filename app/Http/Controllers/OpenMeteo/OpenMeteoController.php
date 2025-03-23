@@ -51,7 +51,11 @@ class OpenMeteoController extends Controller {
         'city' => 'required'
       ]);
 
-      $response = (new CurrentDayWeather)->getCurrentWeatherInfo($request);
+      $data = $request->all();
+      
+      $arrCity = (new CityLocator)->find($data['city']);
+
+      $response = (new CurrentDayWeather)->getCurrentWeatherInfo($arrCity);
 
       return response()->json($response, Response::HTTP_OK);
     } catch (\Throwable $th) {

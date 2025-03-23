@@ -5,6 +5,8 @@ namespace App\Services\OpenMeteo;
 use RuntimeException;
 use App\Facades\OpenMeteoApiFacade;
 
+use function Psy\debug;
+
 /**
  * 
  * @author Eduardo Seiji

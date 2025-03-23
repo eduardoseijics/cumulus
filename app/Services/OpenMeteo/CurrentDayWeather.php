@@ -8,7 +8,6 @@ use App\Services\OpenMeteo\WeatherSummary;
 use App\Services\OpenMeteo\OpenMeteoData;
 use App\Services\OpenMeteo\WeatherCodeManager;
 
-use function Psy\debug;
 
 class CurrentDayWeather {
 
@@ -22,8 +21,7 @@ class CurrentDayWeather {
     $params['current'] = 'temperature_2m,relative_humidity_2m,weather_code';
     $queryString = http_build_query($params);
     $response = OpenMeteoApi::get($queryString);
-    
-    if(empty($response) || !is_array($response)) throw new \RuntimeException('Houve um erro na requisição, tente novamente mais tarde');
+    if(empty($response) || !is_array($response)) throw new \RuntimeException('Houve dasd um erro na requisição, tente novamente mais tarde');
 
     $obOpenMeteoData = new OpenMeteoData($response);
     return [
@@ -39,16 +37,13 @@ class CurrentDayWeather {
    * @param Request $request
    * @return array|null Current weather information
    */
-  public function getCurrentWeatherInfo(Request $request): ?array
+  public function getCurrentWeatherInfo($arrCity): ?array
   {
-    $request->validate([
-      'latitude' => 'required',
-      'longitude' => 'required'
-    ]);
+    $data              = [];
+    $data['latitude']  = $arrCity['latitude'];
+    $data['longitude'] = $arrCity['longitude'];
 
-    $params = $request->all();
-
-    $weatherData = $this->getWeatherData($params);
+    $weatherData = $this->getWeatherData($data);
 
     if(empty($weatherData)) {
       return [];
@@ -71,8 +66,8 @@ class CurrentDayWeather {
    */
   public function getTodayPhrase(array $arrCity): string
   {
-    $data = [];
-    $data['latitude'] = $arrCity['latitude'];
+    $data              = [];
+    $data['latitude']  = $arrCity['latitude'];
     $data['longitude'] = $arrCity['longitude'];
     $weatherData = $this->getWeatherData($data);
 
