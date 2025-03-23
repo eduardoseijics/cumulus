@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Services\OpenMeteo;
+namespace App\Services\GeoCoding;
 
 use RuntimeException;
-use App\Facades\OpenMeteoApiFacade;
+use App\Facades\GeoCodingApiFacade;
 
 /**
  * 
  * @author Eduardo Seiji
  */
-class OpenMeteoApi {
+class GeoCodingApi {
   /**
    * Makes the request to get weather data based on the query string.
    *
@@ -19,11 +19,10 @@ class OpenMeteoApi {
    */
   public static function get($queryString): array
   {
-    $response = OpenMeteoApiFacade::get('?' . $queryString)->json();
+    $response = GeoCodingApiFacade::get('?' . $queryString)->json();
     if (empty($response) || !isset($response)) {
       throw new RuntimeException('Houve um erro na requisição, tente novamente mais tarde');
     }
-
     return $response;
   }
 }

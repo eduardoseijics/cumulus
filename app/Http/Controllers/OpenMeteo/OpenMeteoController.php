@@ -5,9 +5,11 @@ namespace App\Http\Controllers\OpenMeteo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\OpenMeteo\ForecastForDays;
-use App\Services\OpenMeteo\CurrentDayWeather;
 use App\Services\OpenMeteo\PastDaysWeather;
+use App\Services\OpenMeteo\CurrentDayWeather;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Controllers\OpenMeteo\GeoCodingApiController\CityLocator;
+use Exception;
 
 /**
  * 
@@ -23,11 +25,14 @@ class OpenMeteoController extends Controller {
   {
     try {
       $request->validate([
-        'latitude' => 'required',
-        'longitude' => 'required',
+        'city' => 'required'
       ]);
 
-      $phrase = (new CurrentDayWeather)->getTodayPhrase($request);
+      $data = $request->all();
+      
+      $arrCity = (new CityLocator)->find($data['city']);
+
+      $phrase = (new CurrentDayWeather)->getTodayPhrase($arrCity);
       
       return response()->json(['phrase' => $phrase], Response::HTTP_OK);
     } catch (\Throwable $th) {
@@ -43,8 +48,7 @@ class OpenMeteoController extends Controller {
   {
     try {
       $request->validate([
-        'latitude' => 'required',
-        'longitude' => 'required',
+        'city' => 'required'
       ]);
 
       $response = (new CurrentDayWeather)->getCurrentWeatherInfo($request);

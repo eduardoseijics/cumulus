@@ -11,13 +11,13 @@ class WeatherSummary {
  * @param string 
  * @return string The generated weather description.
  */
-  public static function generate(int $weatherCode, string $temperature, string $humidity): string
+  public static function generate(int $weatherCode, string $temperature, string $humidity, string $cityName): string
   {
     $weatherDescription = WeatherCodeManager::getDescription($weatherCode);
 
     $extraMessage = self::getWeatherMessage($weatherCode);
 
-    return 'Hoje está ' . $weatherDescription . ', com ' . $temperature . ' e umidade de ' . $humidity . '. ' . $extraMessage;
+    return 'Hoje está ' . $weatherDescription . ' em '. $cityName . ', com ' . $temperature . ' e umidade de ' . $humidity . '. ' . $extraMessage;
   }
 
   /**

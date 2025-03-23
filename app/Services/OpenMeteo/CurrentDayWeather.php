@@ -8,6 +8,8 @@ use App\Services\OpenMeteo\WeatherSummary;
 use App\Services\OpenMeteo\OpenMeteoData;
 use App\Services\OpenMeteo\WeatherCodeManager;
 
+use function Psy\debug;
+
 class CurrentDayWeather {
 
   /**
@@ -16,12 +18,11 @@ class CurrentDayWeather {
    * @return array Weather data
    */
   private function getWeatherData(array $params)
-  {    
-    $params['current'] .= ',weather_code';
+  {
+    $params['current'] = 'temperature_2m,relative_humidity_2m,weather_code';
     $queryString = http_build_query($params);
-
     $response = OpenMeteoApi::get($queryString);
-
+    
     if(empty($response) || !is_array($response)) throw new \RuntimeException('Houve um erro na requisição, tente novamente mais tarde');
 
     $obOpenMeteoData = new OpenMeteoData($response);
@@ -68,16 +69,17 @@ class CurrentDayWeather {
    * @param Request $request
    * @return string Today phrase talking about weather
    */
-  public function getTodayPhrase(Request $request): string
+  public function getTodayPhrase(array $arrCity): string
   {
-    $params = $request->all();
-
-    $weatherData = $this->getWeatherData($params);
+    $data = [];
+    $data['latitude'] = $arrCity['latitude'];
+    $data['longitude'] = $arrCity['longitude'];
+    $weatherData = $this->getWeatherData($data);
 
     if(empty($weatherData)) {
       return [];
     }
 
-    return WeatherSummary::generate($weatherData['weatherCode'], $weatherData['temperature'], $weatherData['humidity']);
+    return WeatherSummary::generate($weatherData['weatherCode'], $weatherData['temperature'], $weatherData['humidity'], $arrCity['name']);
   }
 }
