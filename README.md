@@ -57,7 +57,7 @@ Caso os parâmetros obrigatórios não sejam informados, a API retornará um err
 
 ```json
 {
-  "error": "Latitude ou longitude não informadas."
+  "error": "Cidade não encontrada."
 }
 ```
 
