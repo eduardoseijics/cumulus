@@ -2,10 +2,11 @@
 
 namespace App\Services\OpenMeteo;
 
-use App\Services\OpenMeteo\OpenMeteoApi;
+use DateTime;
 use Illuminate\Http\Request;
-use App\Services\OpenMeteo\WeatherSummary;
+use App\Services\OpenMeteo\OpenMeteoApi;
 use App\Services\OpenMeteo\OpenMeteoData;
+use App\Services\OpenMeteo\WeatherSummary;
 use App\Services\OpenMeteo\WeatherCodeManager;
 
 class PastDaysWeather {
@@ -15,22 +16,35 @@ class PastDaysWeather {
    * @param Request $request
    * @return array
    */
-  public function getYesterdayWeather(Request $request)
+  public function getYesterdayWeather($arrCity)
   {
-    
-    $params               = [];
-    $params['latitude']  = $request->input('latitude');
-    $params['longitude'] = $request->input('longitude');
-    $params['daily']      = 'weather_code,temperature_2m_max,temperature_2m_min';
-    $params['past_days']  = 1;
+    $params              = [];
+    $params['latitude']  = $arrCity['latitude'];
+    $params['longitude'] = $arrCity['longitude'];
+    $params['timezone']  = $arrCity['timezone'];
+    $params['daily']     = 'weather_code,temperature_2m_max,temperature_2m_min';
+    $params['past_days'] = 1;
     
     $weatherData = $this->getWeatherData($params);
-    
-    if(empty($weatherData)) {
-      return [];
-    }
 
-    return $weatherData;
+    // Mapping only yesterday data
+    $yesterdayData = array_map(function($weatherData) {
+      if (isset($weatherData[0])) {
+          return $weatherData[0];
+      } 
+      
+      return null;      
+    }, $weatherData['daily']);
+
+    $data = DateTime::createFromFormat('Y-m-d', $yesterdayData['time']);  
+    $formattedDate = $data->format('d/m/Y');
+
+    return [
+      'cidade'                => $arrCity['name'],
+      'data'                  => $formattedDate,
+      'temperatura_minima_2m' => $yesterdayData['temperature_2m_min'],
+      'temperatura_maxima_2m' => $yesterdayData['temperature_2m_max'],
+    ];
   }
 
   /**
@@ -44,7 +58,6 @@ class PastDaysWeather {
     
     $response = OpenMeteoApi::get($queryString);
     if(empty($response) || !is_array($response)) throw new \RuntimeException('1Houve um erro na requisição, tente novamente mais tarde dasda');
-
 
     $obOpenMeteoData = new OpenMeteoData($response);
     return [

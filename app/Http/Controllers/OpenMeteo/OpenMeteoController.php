@@ -12,95 +12,86 @@ use App\Http\Controllers\OpenMeteo\GeoCodingApiController\CityLocator;
 use Exception;
 
 /**
- * 
  * @author Eduardo Seiji
  */
 class OpenMeteoController extends Controller {
 
   /**
-   * @param Request $request
-   * @return Response Current day phrase with weather informations
+   * Handle request execution and exception handling.
+   */
+  private function handleRequest(callable $callback): Response
+  {
+    try {
+      return response()->json($callback(), Response::HTTP_OK);
+    } catch (\Throwable $th) {
+      return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Validate request data and return processed input.
+   */
+  private function validateAndGetData(Request $request, array $rules): array
+  {
+    $request->validate($rules);
+    return $request->all();
+  }
+
+  /**
+   * Retrieve city coordinates from CityLocator.
+   */
+  private function getCityCoordinates(string $city): array
+  {
+    return (new CityLocator)->find($city);
+  }
+
+  /**
+   * Get current day phrase with weather information.
    */
   public function getCurrentDayWeatherPhrase(Request $request): Response
   {
-    try {
-      $request->validate([
-        'city' => 'required'
-      ]);
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
 
-      $data = $request->all();
-      
-      $arrCity = (new CityLocator)->find($data['city']);
-
-      $phrase = (new CurrentDayWeather)->getTodayPhrase($arrCity);
-      
-      return response()->json(['phrase' => $phrase], Response::HTTP_OK);
-    } catch (\Throwable $th) {
-      return response()->json(['error' => $th->getMessage()]);
-    }
+      return ['phrase' => (new CurrentDayWeather)->getTodayPhrase($arrCity)];
+    });
   }
 
   /**
-   * @param Request $request
-   * @return Response Current day weather informations
+   * Get current weather information.
    */
   public function getCurrentWeather(Request $request): Response
   {
-    try {
-      $request->validate([
-        'city' => 'required'
-      ]);
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
 
-      $data = $request->all();
-      
-      $arrCity = (new CityLocator)->find($data['city']);
-
-      $response = (new CurrentDayWeather)->getCurrentWeatherInfo($arrCity);
-
-      return response()->json($response, Response::HTTP_OK);
-    } catch (\Throwable $th) {
-      return response()->json(['error' => $th->getMessage()]);
-    }
+      return (new CurrentDayWeather)->getCurrentWeatherInfo($arrCity);
+    });
   }
 
   /**
-   * 
-   * @param Request $request
-   * @return Response Yesterday Weather Information
+   * Get yesterday's weather information.
    */
-  public function getYesterdayWeather(Request $request)
+  public function getYesterdayWeather(Request $request): Response
   {
-    try {
-      $request->validate([
-        'latitude' => 'required',
-        'longitude' => 'required'
-      ]);
-      $obPastDaysWeather = new PastDaysWeather;
-
-      $response = $obPastDaysWeather->getYesterdayWeather($request);
-      return response()->json($response, Response::HTTP_OK);
-    } catch (\Throwable $th) {
-      return response()->json(['error' => $th->getMessage()]);
-    }
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
+      return (new PastDaysWeather)->getYesterdayWeather($arrCity);
+    });
   }
 
   /**
-   * @param Request $request
-   * @return Response Next seven days weather information
+   * Get weather forecast for the next seven days.
    */
   public function getWeatherForNextSevenDays(Request $request): Response
   {
-    try {      
-      $request->validate([
-        'latitude' => 'required',
-        'longitude' => 'required'
-      ]);
-      
-      $obForecastForDaysService = new ForecastForDays;
-      $response = $obForecastForDaysService->getWeatherForNextSevenDays($request);
-      return response()->json($response, Response::HTTP_OK);
-    } catch (\Throwable $th) {
-      return response()->json(['error' => $th->getMessage()]);
-    }
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
+      return (new ForecastForDays)->getWeatherForNextSevenDays($arrCity);
+    });
   }
 }
