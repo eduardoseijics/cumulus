@@ -32,6 +32,10 @@ Este projeto fornece uma interface para consumir a API OpenMeteo, permitindo obt
 
 ## Uso
 
+
+### Collection
+
+As rotas e exemplos da api estão disponível em https://app.swaggerhub.com/apis/EduardoSeijicastrosilva/cumulus-api/1.0.0
 ### Obter Clima Atual
 
 A API permite buscar o clima atual com base nas coordenadas (latitude e longitude). Para isso, envie uma requisição `GET` para:
