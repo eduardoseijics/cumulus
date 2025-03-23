@@ -25,22 +25,29 @@ Este projeto fornece uma interface para consumir a API OpenMeteo, permitindo obt
    composer install
    ```
 
-4. Configure as variáveis de ambiente no arquivo `.env`.
+4. Inicie o projeto
+   ```sh
+   php artisan serve
+   ```
 
 ## Uso
 
+
+### Collection
+
+As rotas e exemplos da api estão disponível em https://app.swaggerhub.com/apis/EduardoSeijicastrosilva/cumulus-api/1.0.0
 ### Obter Clima Atual
 
 A API permite buscar o clima atual com base nas coordenadas (latitude e longitude). Para isso, envie uma requisição `GET` para:
 
 ```sh
-GET /api/dia-atual?latitude={latitude}&longitude={longitude}&current=temperature_2m,weather_code,relative_humidity_2m
+GET /api/clima/hoje/frase?city=São Paulo
 ```
 
 **Exemplo de resposta:**
 ```json
 {
-    "phrase": "Hoje está Parcialmente nublado, com 31.1°C e umidade de 44%. O céu está principalmente limpo."
+    "phrase": "Hoje está Encoberto em São Paulo, com 26.2°C e umidade de 68%. O céu está parcialmente nublado."
 }
 ```
 

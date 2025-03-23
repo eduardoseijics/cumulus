@@ -19,7 +19,7 @@ class ApiServiceProvider extends ServiceProvider {
 
     $this->app->bind('geocoding-api-service', function() {
       return Http::withOptions([
-        'base_uri' => 'https://geocoding-api.open-meteo.com/v1/'
+        'base_uri' => 'https://geocoding-api.open-meteo.com/v1/search/'
       ])->withHeaders([
         'Content-type' => 'application/json; charset=utf-8'
       ]);

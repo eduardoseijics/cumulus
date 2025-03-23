@@ -20,44 +20,47 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::controller(OpenMeteoController::class)->group(function() {
-  
   /**
-   * Get a descriptive weather phrase for the current day.
+   * Get the weather description for the current day.
    */
-  Route::get('dia-atual', 'getCurrentDayWeatherPhrase');
+  Route::get('clima/hoje/frase', 'getCurrentDayWeatherPhrase');
 
   /**
-   * Get the current weather conditions.
+   * Get the current weather data.
    */
-  Route::get('clima-atual', 'getCurrentWeather');
+  Route::get('clima/atual', 'getCurrentWeather');
 
   /**
-   * Get the weather forecast for the next seven days.
+   * Get the weather forecast for the upcoming days.
    */
-  Route::get('proximos-sete-dias', 'getWeatherForNextSevenDays');
+  Route::get('clima/proximos-7-dias', 'getWeatherForNextSevenDays');
 
   /**
-   * Get the average temperature for yesterday.
+   * Get the average temperature of yesterday.
    */
-  Route::get('temperatura-media-ontem', 'getYesterdayWeather');
+  Route::get('clima/ontem', 'getYesterdayWeather');
 
   /**
-   * Convert temperature units.
+   * WORK IN PROGRESS
+   * Convert temperature values.
    */
-  Route::get('converter-temperatura', 'getCurrentDayWeather');
+  Route::get('clima/conversao-temperatura', 'convertTemperature');
 
   /**
-   * Get sunrise and sunset times for the current day.
+   * WORK IN PROGRESS
+   * Get sunrise and sunset times.
    */
-  Route::get('nascer-por-do-sol', 'getCurrentDayWeather');
+  Route::get('clima/nascer-por-do-sol', 'getSunriseSunset');
 
   /**
-   * Get the probability of rain for the current day.
+   * WORK IN PROGRESS
+   * Get the rain forecast.
    */
-  Route::get('previsao-chuva', 'getCurrentDayWeather');
+  Route::get('clima/probabilidade-chuva', 'getRainForecast');
 
   /**
-   * Compare yesterday's and today's temperature.
+   * WORK IN PROGRESS
+   * Compare yesterday's and today's temperatures.
    */
-  Route::get('temperatura-ontem-hoje', 'getCurrentDayWeather');
+  Route::get('clima/comparar-temperatura', 'compareYesterdayTodayTemperature');
 });

@@ -9,30 +9,24 @@ class ForecastForDays {
   /**
    * @return array Formatted weather data from the next seven days
    */
-  public function getWeatherForNextSevenDays($request): array
+  public function getWeatherForNextSevenDays($params): array
   {
-    $params = $request->all();
-
-    $this->validateCoordinates($params);
-
     $params['daily'] = 'temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode';
     $queryString = http_build_query($params);
 
     $response = OpenMeteoApi::get($queryString);
 
-    // Formata os dados para resposta
     return $this->formatWeatherData($response['daily']);
   }
 
-  private function validateCoordinates($params)
+  /**
+   * @param array $dailyData
+   * @return array Formated weather data
+   */
+  private function formatWeatherData(array $dailyData): array
   {
-    if (empty($params['latitude']) || empty($params['longitude'])) {
-      throw new \InvalidArgumentException('Latitude ou longitude não informadas.');
-    }
-  }
+    if(!is_array($dailyData)) return [];
 
-  private function formatWeatherData($dailyData)
-  {
     $formattedWeatherData = [];
 
     foreach ($dailyData['time'] as $index => $date) {
