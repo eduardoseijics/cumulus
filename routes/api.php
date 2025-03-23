@@ -41,21 +41,25 @@ Route::controller(OpenMeteoController::class)->group(function() {
   Route::get('clima/ontem', 'getYesterdayWeather');
 
   /**
+   * WORK IN PROGRESS
    * Convert temperature values.
    */
   Route::get('clima/conversao-temperatura', 'convertTemperature');
 
   /**
+   * WORK IN PROGRESS
    * Get sunrise and sunset times.
    */
-  Route::get('clima/nascer-pordo-sol', 'getSunriseSunset');
+  Route::get('clima/nascer-por-do-sol', 'getSunriseSunset');
 
   /**
+   * WORK IN PROGRESS
    * Get the rain forecast.
    */
   Route::get('clima/probabilidade-chuva', 'getRainForecast');
 
   /**
+   * WORK IN PROGRESS
    * Compare yesterday's and today's temperatures.
    */
   Route::get('clima/comparar-temperatura', 'compareYesterdayTodayTemperature');
