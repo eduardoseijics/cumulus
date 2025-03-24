@@ -2,7 +2,7 @@
 
 namespace App\Services\OpenMeteo;
 
-use Carbon\Carbon;
+use App\Services\DateService;
 use App\Services\OpenMeteo\OpenMeteoApi;
 use App\Services\OpenMeteo\OpenMeteoData;
 use App\Services\OpenMeteo\WeatherSummary;
@@ -10,22 +10,6 @@ use App\Services\OpenMeteo\WeatherCodeManager;
 
 class CurrentDayWeather
 {
-  /**
-   * Fetch weather data with dynamic parameters
-   *
-   * @param array $params Request parameters
-   * @return array Weather data
-   */
-  private function fetchWeatherData(array $params): array
-  {
-    $queryString = http_build_query($params);
-    $response = OpenMeteoApi::get($queryString);
-    if (empty($response) || !is_array($response)) {
-      throw new \RuntimeException('Erro na requisição, tente novamente mais tarde.');
-    }
-
-    return $response;
-  }
 
   /**
    * Get current weather information
@@ -41,7 +25,7 @@ class CurrentDayWeather
       'current'   => 'temperature_2m,relative_humidity_2m,weather_code'
     ];
 
-    $response = $this->fetchWeatherData($params);
+    $response = OpenMeteoApi::fetchWeatherData($params);
     $weatherData = new OpenMeteoData($response);
 
     return [
@@ -66,7 +50,7 @@ class CurrentDayWeather
       'current'   => 'temperature_2m,relative_humidity_2m,weather_code'
     ];
 
-    $response = $this->fetchWeatherData($params);
+    $response = OpenMeteoApi::fetchWeatherData($params);
     $weatherData = new OpenMeteoData($response);
 
     return WeatherSummary::generate(
@@ -91,13 +75,13 @@ class CurrentDayWeather
       'timezone'  => $arrCity['timezone'],
       'daily'     => 'sunrise,sunset'
     ];
-    $response = $this->fetchWeatherData($params);
+    $response = OpenMeteoApi::fetchWeatherData($params);
 
     $sunrise = $response['daily']['sunrise'][0];
-    $sunset = $response['daily']['sunset'][0];
+    $sunset  = $response['daily']['sunset'][0];
 
-    $sunrise = $this->extractTimeFromString($sunrise);
-    $sunset = $this->extractTimeFromString($sunset);
+    $sunrise = DateService::extractTimeFromString($sunrise);
+    $sunset  = DateService::extractTimeFromString($sunset);
 
     return [
       'cidade'        => $arrCity['name'],
@@ -106,13 +90,54 @@ class CurrentDayWeather
     ];
   }
 
-  /**
-   * Convert time from string
-   */
-  public function extractTimeFromString($dateString): string
+  public function getTemperatureDifference($arrCity)
   {
-    $date = Carbon::parse($dateString);
+    $params = [
+      'latitude'  => $arrCity['latitude'],
+      'longitude' => $arrCity['longitude'],
+      'timezone'  => $arrCity['timezone'],
+      'daily'     => 'temperature_2m_max',
+      'past_days' => 1
+    ];
 
-    return $date->format('H:i');
-}
+    $response = OpenMeteoApi::fetchWeatherData($params);
+    return $this->getTemperatureComparison($response['daily'], $arrCity['name']);
+  }
+
+  /**
+   * @param array $temperatureData
+   * @param string $cityName
+   * @return array
+   */
+  public function getTemperatureComparison(array $temperatureData, string $cityName): array
+  {
+    $temperatures = array_slice($temperatureData['temperature_2m_max'], -2);
+
+    $comparisonResult = $this->compareTemperatures($temperatures[1], $temperatures[0]);
+
+    return [
+      'cidade'     => $cityName,
+      'ontem'      => $temperatures[0] . "°C",
+      'hoje'       => $temperatures[1] . "°C",
+      'comparacao' => $comparisonResult
+    ];
+  }
+
+  /**
+   * @param float $todayMax
+   * @param float $yesterdayMax
+   * @return string Phrase telling which one is hotter
+   */
+  private function compareTemperatures(float $todayMax, float $yesterdayMax): string
+  {
+    if($todayMax > $yesterdayMax) {
+      return "Hoje está mais quente que ontem.";
+    } 
+    
+    if($yesterdayMax > $todayMax) {
+      return "Ontem esteve mais quente que hoje.";
+    }
+
+    return "Hoje e ontem tiveram a mesma temperatura máxima.";
+  }
 }

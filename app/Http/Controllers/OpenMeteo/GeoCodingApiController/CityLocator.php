@@ -4,23 +4,12 @@ namespace App\Http\Controllers\OpenMeteo\GeoCodingApiController;
 
 use App\Services\GeoCoding\GeoCodingApi;
 
-
 class CityLocator {
 
-  private string $cityName;
-
   /**
-   * 
-   * Returns city name
-   * @return string
-   */
-  public function getCityName(): string
-  {
-    return $this->cityName;
-  }
-
-  /**
-   * 
+   * Returns an array with city information
+   * @param string $cityName
+   * @return array
    */
   public function find(string $cityName): array
   {

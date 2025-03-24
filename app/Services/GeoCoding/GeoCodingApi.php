@@ -20,7 +20,7 @@ class GeoCodingApi {
   public static function get($queryString): array
   {
     $response = GeoCodingApiFacade::get('?' . $queryString)->json();
-    if (empty($response) || !isset($response)) {
+    if(empty($response) || !isset($response)) {
       throw new RuntimeException('Houve um erro na requisição, tente novamente mais tarde');
     }
     return $response;

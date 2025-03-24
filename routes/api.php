@@ -15,10 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::controller(OpenMeteoController::class)->group(function() {
   /**
    * Get the weather description for the current day.
@@ -46,13 +42,13 @@ Route::controller(OpenMeteoController::class)->group(function() {
   Route::post('clima/conversao-temperatura', 'getConvertedTemperature');
 
   /**
-   * WORK IN PROGRESS
+   *
    * Get sunrise and sunset times.
    */
   Route::get('clima/nascer-por-do-sol', 'getSunriseSunset');
 
   /**
-   * WORK IN PROGRESS
+   *
    * Get the rain forecast.
    */
   Route::get('clima/probabilidade-chuva', 'getRainForecast');
