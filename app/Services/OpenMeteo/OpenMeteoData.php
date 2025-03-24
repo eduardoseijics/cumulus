@@ -20,6 +20,7 @@ class OpenMeteoData {
 
   /**
    * Returns currents temperature with its unit
+   * @return string|null Current temperature
    */
   public function getCurrentTemperature(): ?string
   {
@@ -42,10 +43,19 @@ class OpenMeteoData {
 
   /**
    * 
-   * @return int|null Weather code
+   * @return int|null Current weather code
    */
   public function getCurrentWeatherCode()
   {
     return $this->weatherData['current']['weather_code'] ?? null;
+  }
+
+  /**
+   * 
+   * @return array|null Daily
+   */
+  public function getDaily()
+  {
+    return $this->weatherData['daily'] ?? null;
   }
 }

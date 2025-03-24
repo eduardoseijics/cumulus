@@ -2,48 +2,132 @@
 
 namespace App\Http\Controllers\OpenMeteo;
 
-use App\Facades\ApiService;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\OpenMeteo\ForecastForDays;
+use App\Services\OpenMeteo\PastDaysWeather;
+use App\Services\OpenMeteo\CurrentDayWeather;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Controllers\OpenMeteo\GeoCodingApiController\CityLocator;
+use App\Services\TemperatureConverter;
 
-class OpenMeteoController extends Controller
-{
+/**
+ * @author Eduardo Seiji
+ */
+class OpenMeteoController extends Controller {
 
+  /**
+   * Handle request execution and exception handling.
+   */
+  private function handleRequest(callable $callback): Response
+  {
+    try {
+      return response()->json($callback(), Response::HTTP_OK);
+    } catch (\Throwable $th) {
+      return response()->json(['error' => $th->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Validate request data and return processed input.
+   */
+  private function validateAndGetData(Request $request, array $rules): array
+  {
+    $request->validate($rules);
+    return $request->all();
+  }
+
+  /**
+   * Retrieve city coordinates from CityLocator.
+   */
+  private function getCityCoordinates(string $city): array
+  {
+    return (new CityLocator)->find($city);
+  }
+
+  /**
+   * Get current day phrase with weather information.
+   */
   public function getCurrentDayWeatherPhrase(Request $request): Response
   {
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
 
-    try {
-      $obCurrentDayWeather = new CurrentDayWeatherController;
-      $phrase = $obCurrentDayWeather->getTodayPhrase($request);
-      return response()->json(['phrase' => $phrase], Response::HTTP_OK);
-    } catch (\Throwable $th) {
-      return response()->json(['error' => $th->getMessage()]);
-    }
+      return ['phrase' => (new CurrentDayWeather)->getTodayPhrase($arrCity)];
+    });
   }
 
-  public function getCurrentWeather(Request $request)
+  /**
+   * Get current weather information.
+   */
+  public function getCurrentWeather(Request $request): Response
   {
-    try {
-      $obCurrentDayWeather = new CurrentDayWeatherController;
-      $response = $obCurrentDayWeather->getCurrentWeatherInfo($request);
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
 
-      return response()->json($response, Response::HTTP_OK);
-    } catch (\Throwable $th) {
-      return response()->json(['error' => $th->getMessage()]);
-    }
+      return (new CurrentDayWeather)->getCurrentWeatherInfo($arrCity);
+    });
   }
 
-  public function getWeatherForNextSevenDays(Request $request)
+  /**
+   * Get yesterday's weather information.
+   */
+  public function getYesterdayWeather(Request $request): Response
   {
-    try {
-      $obForecastForDaysService = new ForecastForDays;
-      $response = $obForecastForDaysService->getWeatherForNextSevenDays($request);
-      return response()->json($response, Response::HTTP_OK);
-    } catch (\Throwable $th) {
-      return response()->json(['error' => $th->getMessage()]);
-    }
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
+      return (new PastDaysWeather)->getYesterdayWeather($arrCity);
+    });
+  }
+
+  /**
+   * Get weather forecast for the next seven days.
+   */
+  public function getWeatherForNextSevenDays(Request $request): Response
+  {
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
+      return (new ForecastForDays)->getWeatherForNextSevenDays($arrCity);
+    });
+  }
+
+  /**
+   * 
+   * Return converted temperature
+   * @param Request $request
+   * @return array
+   */
+  public function getConvertedTemperature(Request $request)
+  {
+    return $this->handleRequest(function () use ($request) {
+      $rules = [
+        'temperature' => 'required',
+        'from'        => 'required|string|in:celsius,fahrenheit,kelvin',
+        'to'          => 'required|string|in:celsius,fahrenheit,kelvin'
+      ];
+      $data = $this->validateAndGetData($request, $rules);
+      
+      $convertedTemperature = TemperatureConverter::convert($data['temperature'], $data['from'], $data['to']);
+
+      return [
+        'de'                     => $data['from'],
+        'para'                   => $data['to'],
+        'temperatura_original'   => $data['temperature'],
+        'temperatura_convertida' => $convertedTemperature
+      ];
+    });
+  }
+
+  public function getSunriseSunset(Request $request)
+  {
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
+      
+    });
   }
 }

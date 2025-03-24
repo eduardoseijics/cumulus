@@ -20,12 +20,46 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::controller(OpenMeteoController::class)->group(function() {
-  Route::get('dia-atual', 'getCurrentDayWeatherPhrase');
-  Route::get('clima-atual', 'getCurrentWeather');
-  Route::get('proximos-sete-dias', 'getWeatherForNextSevenDays');
-  Route::get('temperatura-media-ontem', 'getYesterdayWeather');
-  Route::get('converter-temperatura', 'getCurrentDayWeather');
-  Route::get('nascer-por-do-sol', 'getCurrentDayWeather');
-  Route::get('previsao-chuva', 'getCurrentDayWeather');
-  Route::get('temperatura-ontem-hoje', 'getCurrentDayWeather');
+  /**
+   * Get the weather description for the current day.
+   */
+  Route::get('clima/hoje/frase', 'getCurrentDayWeatherPhrase');
+
+  /**
+   * Get the current weather data.
+   */
+  Route::get('clima/atual', 'getCurrentWeather');
+
+  /**
+   * Get the weather forecast for the upcoming days.
+   */
+  Route::get('clima/proximos-7-dias', 'getWeatherForNextSevenDays');
+
+  /**
+   * Get the average temperature of yesterday.
+   */
+  Route::get('clima/ontem', 'getYesterdayWeather');
+
+  /**
+   * Convert temperature values.
+   */
+  Route::post('clima/conversao-temperatura', 'getConvertedTemperature');
+
+  /**
+   * WORK IN PROGRESS
+   * Get sunrise and sunset times.
+   */
+  Route::get('clima/nascer-por-do-sol', 'getSunriseSunset');
+
+  /**
+   * WORK IN PROGRESS
+   * Get the rain forecast.
+   */
+  Route::get('clima/probabilidade-chuva', 'getRainForecast');
+
+  /**
+   * WORK IN PROGRESS
+   * Compare yesterday's and today's temperatures.
+   */
+  Route::get('clima/comparar-temperatura', 'compareYesterdayTodayTemperature');
 });
