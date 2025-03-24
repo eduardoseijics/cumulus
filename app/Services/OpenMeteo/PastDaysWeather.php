@@ -57,7 +57,7 @@ class PastDaysWeather {
     $queryString = http_build_query($params);
     
     $response = OpenMeteoApi::get($queryString);
-    if(empty($response) || !is_array($response)) throw new \RuntimeException('1Houve um erro na requisição, tente novamente mais tarde dasda');
+    if(empty($response) || !is_array($response)) throw new \RuntimeException('Houve um erro na requisição, tente novamente mais tarde dasda');
 
     $obOpenMeteoData = new OpenMeteoData($response);
     return [
