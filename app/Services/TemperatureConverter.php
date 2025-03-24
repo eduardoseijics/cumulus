@@ -4,8 +4,7 @@ namespace App\Services;
 
 use InvalidArgumentException;
 
-class TemperatureConverter
-{
+class TemperatureConverter {
 
   /**
    * Converts temperature between Celsius, Fahrenheit, and Kelvin.
@@ -21,7 +20,7 @@ class TemperatureConverter
     $from = strtolower($from);
     $to   = strtolower($to);
 
-    if ($from === $to) {
+    if($from === $to) {
       return $value; 
     }
 

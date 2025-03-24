@@ -18,18 +18,19 @@ class PastDaysWeather {
    */
   public function getYesterdayWeather($arrCity)
   {
-    $params              = [];
-    $params['latitude']  = $arrCity['latitude'];
-    $params['longitude'] = $arrCity['longitude'];
-    $params['timezone']  = $arrCity['timezone'];
-    $params['daily']     = 'weather_code,temperature_2m_max,temperature_2m_min';
-    $params['past_days'] = 1;
+    $params = [
+      'latitude'  => $arrCity['latitude'],
+      'longitude' => $arrCity['longitude'],
+      'timezone'  => $arrCity['timezone'],
+      'daily'     => 'weather_code,temperature_2m_max,temperature_2m_min',
+      'past_days' => 1
+    ];
     
     $weatherData = $this->getWeatherData($params);
 
     // Mapping only yesterday data
     $yesterdayData = array_map(function($weatherData) {
-      if (isset($weatherData[0])) {
+      if(isset($weatherData[0])) {
           return $weatherData[0];
       } 
       
@@ -57,7 +58,6 @@ class PastDaysWeather {
     $queryString = http_build_query($params);
     
     $response = OpenMeteoApi::get($queryString);
-    if(empty($response) || !is_array($response)) throw new \RuntimeException('Houve um erro na requisição, tente novamente mais tarde dasda');
 
     $obOpenMeteoData = new OpenMeteoData($response);
     return [
