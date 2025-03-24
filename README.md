@@ -1,4 +1,4 @@
-# OpenMeteo Weather API Wrapper
+# Cumulus - OpenMeteo Weather API Wrapper
 
 Este projeto fornece uma interface para consumir a API OpenMeteo, permitindo obter dados meteorológicos atuais de forma simplificada.
 
