@@ -9,7 +9,7 @@ use App\Services\OpenMeteo\PastDaysWeather;
 use App\Services\OpenMeteo\CurrentDayWeather;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\OpenMeteo\GeoCodingApiController\CityLocator;
-use Exception;
+use App\Services\TemperatureConverter;
 
 /**
  * @author Eduardo Seiji
@@ -92,6 +92,42 @@ class OpenMeteoController extends Controller {
       $data = $this->validateAndGetData($request, ['city' => 'required']);
       $arrCity = $this->getCityCoordinates($data['city']);
       return (new ForecastForDays)->getWeatherForNextSevenDays($arrCity);
+    });
+  }
+
+  /**
+   * 
+   * Return converted temperature
+   * @param Request $request
+   * @return array
+   */
+  public function getConvertedTemperature(Request $request)
+  {
+    return $this->handleRequest(function () use ($request) {
+      $rules = [
+        'temperature' => 'required',
+        'from'        => 'required|string|in:celsius,fahrenheit,kelvin',
+        'to'          => 'required|string|in:celsius,fahrenheit,kelvin'
+      ];
+      $data = $this->validateAndGetData($request, $rules);
+      
+      $convertedTemperature = TemperatureConverter::convert($data['temperature'], $data['from'], $data['to']);
+
+      return [
+        'de'                     => $data['from'],
+        'para'                   => $data['to'],
+        'temperatura_original'   => $data['temperature'],
+        'temperatura_convertida' => $convertedTemperature
+      ];
+    });
+  }
+
+  public function getSunriseSunset(Request $request)
+  {
+    return $this->handleRequest(function () use ($request) {
+      $data = $this->validateAndGetData($request, ['city' => 'required']);
+      $arrCity = $this->getCityCoordinates($data['city']);
+      
     });
   }
 }

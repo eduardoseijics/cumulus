@@ -41,10 +41,9 @@ Route::controller(OpenMeteoController::class)->group(function() {
   Route::get('clima/ontem', 'getYesterdayWeather');
 
   /**
-   * WORK IN PROGRESS
    * Convert temperature values.
    */
-  Route::get('clima/conversao-temperatura', 'convertTemperature');
+  Route::post('clima/conversao-temperatura', 'getConvertedTemperature');
 
   /**
    * WORK IN PROGRESS
