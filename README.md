@@ -12,7 +12,7 @@ Este projeto fornece uma interface para consumir a API OpenMeteo, permitindo obt
 
 1. Clone este repositório:
    ```sh
-   git clone https://github.com/seu-usuario/seu-repositorio.git
+   git clone https://github.com/eduardoseijics/cumulus.git
    ```
 
 2. Acesse o diretório do projeto:
