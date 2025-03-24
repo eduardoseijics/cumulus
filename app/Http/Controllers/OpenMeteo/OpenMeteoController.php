@@ -127,7 +127,7 @@ class OpenMeteoController extends Controller {
     return $this->handleRequest(function () use ($request) {
       $data = $this->validateAndGetData($request, ['city' => 'required']);
       $arrCity = $this->getCityCoordinates($data['city']);
-      
+      return (new CurrentDayWeather)->getSunriseAndSunset($arrCity);
     });
   }
 }
